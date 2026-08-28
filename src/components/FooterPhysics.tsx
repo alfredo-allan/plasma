@@ -16,6 +16,15 @@ type FooterPhysicsProps = {
   className?: string;
 };
 
+// Nossas texturas de shape são 400x1425px — casando com o corpo físico (80x285)
+// pra visual e colisão ficarem no mesmo tamanho, sem o board parecer gigante/cortado.
+const BOARD_BODY_WIDTH = 80;
+const BOARD_BODY_HEIGHT = 285;
+const TEXTURE_NATIVE_WIDTH = 400;
+const TEXTURE_NATIVE_HEIGHT = 1425;
+const SPRITE_X_SCALE = BOARD_BODY_WIDTH / TEXTURE_NATIVE_WIDTH;
+const SPRITE_Y_SCALE = BOARD_BODY_HEIGHT / TEXTURE_NATIVE_HEIGHT;
+
 export function FooterPhysics({
   boardTextureURLs = [],
   className,
@@ -181,16 +190,16 @@ export function FooterPhysics({
       const y = Math.random() * (ch / 2 - 100) + 50;
       const rotation = ((Math.random() * 100 - 50) * Math.PI) / 180;
 
-      return Bodies.rectangle(x, y, 80, 285, {
-        chamfer: { radius: 40 }, // Rounded corners for accurate collision
+      return Bodies.rectangle(x, y, BOARD_BODY_WIDTH, BOARD_BODY_HEIGHT, {
+        chamfer: { radius: BOARD_BODY_WIDTH / 2 }, // Pontas arredondadas — casa com o alpha do nosso shape
         angle: rotation,
         restitution: 0.8, // Bounciness
         friction: 0.005, // minimal friction
         render: {
           sprite: {
             texture,
-            xScale: 0.5, // Scale texture down
-            yScale: 0.5,
+            xScale: SPRITE_X_SCALE, // Escala calculada pra bater exatamente com o corpo físico
+            yScale: SPRITE_Y_SCALE,
           },
         },
       });

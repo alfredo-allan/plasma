@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import { Bowlby_One_SC, DM_Mono } from "next/font/google";
 
-import "./globals.css";
+import "./globals.css";  // ← CORRETO
 import { SVGFilters } from "@/components/SVGFilters";
-import { createClient } from "@/prismicio";
 
 const bowlby = Bowlby_One_SC({
   subsets: ["latin"],
@@ -19,18 +18,16 @@ const dmMono = DM_Mono({
   weight: "500",
 });
 
-export async function generateMetadata(): Promise<Metadata> {
-  const client = createClient();
-  const settings = await client.getSingle("settings");
-
-  return {
-    title: settings.data.site_title,
-    description: settings.data.meta_description,
-    openGraph: {
-      images: settings.data.fallback_og_image.url ?? undefined,
-    },
-  };
-}
+// Metadados fixos - você pode editar aqui
+export const metadata: Metadata = {
+  title: "Plasma Footwear",
+  description: "O autêntico streetwear de São Paulo feito por e para skatistas. Vestuário, estilo e atitude !",
+  openGraph: {
+    title: "Skateboards Store",
+    description: "Personalize seu skate e domine as pistas!",
+    images: ["/og-image.jpg"],
+  },
+};
 
 export default function RootLayout({
   children,
@@ -38,7 +35,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="pt-BR">
       <body
         className={`${bowlby.variable} ${dmMono.variable} antialiased font-mono font-medium text-zinc-800`}
       >

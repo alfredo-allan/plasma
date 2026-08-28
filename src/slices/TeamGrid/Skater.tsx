@@ -1,50 +1,80 @@
 import { ButtonLink } from "@/components/ButtonLink";
-import { Content } from "@prismicio/client";
-import { PrismicNextImage } from "@prismicio/next";
 import { SkaterScribble } from "./SkaterScribble";
 import clsx from "clsx";
+import Image from "next/image";
+
+// Tipo baseado nos dados fixos que definimos no TeamGrid
+type SocialType = {
+  instagram?: string;
+  twitter?: string;
+};
+
+type SkaterDataType = {
+  first_name: string;
+  last_name: string;
+  bio?: string;
+  image?: string;
+  photo_background?: string;
+  photo_foreground?: string;
+  customizer_link?: string;
+  social?: SocialType;
+};
 
 type Props = {
-  skater: Content.SkaterDocument;
+  skater: SkaterDataType;
   index: number;
 };
 
-export function Skater({ skater, index }: Props) {
-  const colors = [
-    "text-brand-blue",
-    "text-brand-lime",
-    "text-brand-orange",
-    "text-brand-pink",
-    "text-brand-purple",
-  ];
+// Cor do rabisco atrás da foto (mesma cor da marca em todos os cards, reforça identidade)
+const SCRIBBLE_COLOR = "text-brand-plasma";
 
-  const scribbleColor = colors[index];
+// Imagens padrão caso não existam
+const DEFAULT_BACKGROUND_IMAGE = "/models/default-bg.jpg";
+const DEFAULT_FOREGROUND_IMAGE = "/models/default-fg.png";
+
+export function Skater({ skater }: Props) {
+  const backgroundImage = skater.photo_background || skater.image || DEFAULT_BACKGROUND_IMAGE;
+  const foregroundImage = skater.photo_foreground || skater.image || DEFAULT_FOREGROUND_IMAGE;
+  const customizerLink = skater.customizer_link || "/categorias";
 
   return (
     <div className="skater group relative flex flex-col items-center gap-4">
       <div className="stack-layout overflow-hidden">
-        <PrismicNextImage
-          field={skater.data.photo_background}
-          width={500}
-          imgixParams={{ q: 20 }}
-          alt=""
-          className="scale-110 transform transition-all duration-1000 ease-in-out group-hover:scale-100 group-hover:brightness-75 group-hover:saturate-[.8]"
+        {/* Background Image */}
+        <div className="relative overflow-hidden">
+          <Image
+            src={backgroundImage}
+            width={1128}
+            height={1400}
+            alt=""
+            className="scale-100 transform transition-all duration-700 ease-out group-hover:scale-110 group-hover:brightness-75 group-hover:saturate-[.8]"
+          />
+        </div>
+
+        {/* Scribble Effect */}
+        <SkaterScribble className={clsx("relative", SCRIBBLE_COLOR)} />
+
+        {/* Foreground Image */}
+        <Image
+          src={foregroundImage}
+          width={1128}
+          height={1400}
+          alt={skater.first_name}
+          className="scale-100 transform transition-transform duration-700 ease-out group-hover:scale-[1.18]"
         />
-        <SkaterScribble className={clsx("relative", scribbleColor)} />
-        <PrismicNextImage
-          field={skater.data.photo_foreground}
-          width={500}
-          alt=""
-          className="transform transition-transform duration-1000 ease-in-out group-hover:scale-110"
-        />
+
+        {/* Gradient Overlay */}
         <div className="relative h-48 w-full place-self-end bg-gradient-to-t from-black via-transparent to-transparent"></div>
+
+        {/* Name */}
         <h3 className="relative grid place-self-end justify-self-start p-2 font-sans text-brand-gray ~text-2xl/3xl">
-          <span className="mb-[-.3em] block">{skater.data.first_name}</span>
-          <span className="block">{skater.data.last_name}</span>
+          <span className="mb-[-.3em] block">{skater.first_name}</span>
+          <span className="block">{skater.last_name}</span>
         </h3>
       </div>
-      <ButtonLink field={skater.data.customizer_link} size="sm">
-        Build their board
+
+      <ButtonLink href={customizerLink} size="sm">
+        Ver categoria
       </ButtonLink>
     </div>
   );

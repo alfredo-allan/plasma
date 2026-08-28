@@ -1,46 +1,69 @@
-import { PrismicNextImage, PrismicNextLink } from "@prismicio/next";
 import React from "react";
-import { asImageSrc } from "@prismicio/client";
+import Image from "next/image";
+import Link from "next/link";
 
-import { createClient } from "@/prismicio";
 import { Logo } from "@/components/Logo";
 import { Bounded } from "./Bounded";
 import { FooterPhysics } from "./FooterPhysics";
 
-export async function Footer() {
-  const client = createClient();
-  const settings = await client.getSingle("settings");
+// Links de navegação fixos
+const NAVIGATION_ITEMS = [
+  { text: "Home", href: "/" },
+  { text: "Produtos", href: "/produtos" },
+  { text: "Sobre", href: "/sobre" },
+  { text: "Contato", href: "/contato" },
+  { text: "Termos de Uso", href: "/termos" },
+  { text: "Privacidade", href: "/privacidade" },
+];
 
-  const boardTextureURLs = settings.data.footer_skateboards
-    .map((item) => asImageSrc(item.skateboard, { h: 600 }))
-    .filter((url): url is string => Boolean(url));
+// 5 variações do nosso shape (mesma identidade visual do Hero) caindo no footer
+const BOARD_TEXTURE_URLS = [
+  "/skateboard/deck-footer-black.webp",
+  "/skateboard/deck-footer-red.webp",
+  "/skateboard/deck-footer-cream.webp",
+  "/skateboard/deck-footer-navy.webp",
+  "/skateboard/deck-footer-heartbeat.webp",
+];
 
+// Imagem de fundo do footer
+const FOOTER_BACKGROUND_IMAGE = "/footer-bg.jpg";
+
+export function Footer() {
   return (
     <footer className="bg-texture bg-zinc-900 text-white overflow-hidden">
       <div className="relative h-[75vh] ~p-10/16 md:aspect-auto">
-        <PrismicNextImage
-          field={settings.data.footer_image}
-          alt=""
-          fill
-          className="object-cover"
-          width={1200}
-        />
+        {/* Imagem de fundo */}
+        <div className="absolute inset-0">
+          <Image
+            src={FOOTER_BACKGROUND_IMAGE}
+            alt=""
+            fill
+            className="object-cover"
+          />
+        </div>
+
+        {/* Física dos skates */}
         <FooterPhysics
-          boardTextureURLs={boardTextureURLs}
+          boardTextureURLs={BOARD_TEXTURE_URLS}
           className="absolute inset-0 overflow-hidden"
         />
+
+        {/* Logo */}
         <Logo className="pointer-events-none relative h-20 mix-blend-exclusion md:h-28" />
       </div>
+
+      {/* Navegação */}
       <Bounded as="nav">
         <ul className="flex flex-wrap justify-center gap-8 ~text-lg/xl">
-          {settings.data.navigation.map((item) => (
-            <li key={item.link.text} className="hover:underline">
-              <PrismicNextLink field={item.link} />
+          {NAVIGATION_ITEMS.map((item) => (
+            <li key={item.text} className="hover:underline">
+              <Link href={item.href}>
+                {item.text}
+              </Link>
             </li>
           ))}
         </ul>
       </Bounded>
-      {/* List of links */}
     </footer>
   );
 }

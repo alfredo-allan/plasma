@@ -1,39 +1,57 @@
 import { Bounded } from "@/components/Bounded";
 import { Heading } from "@/components/Heading";
-import { createClient } from "@/prismicio";
-import { Content } from "@prismicio/client";
-import { PrismicText, SliceComponentProps } from "@prismicio/react";
 import React from "react";
 import { Skater } from "./Skater";
 import { SlideIn } from "@/components/SlideIn";
 
-/**
- * Props for `TeamGrid`.
- */
-export type TeamGridProps = SliceComponentProps<Content.TeamGridSlice>;
+// Cenas lifestyle com modelos usando as peças Plasma em movimento
+const SKATERS_DATA = [
+  {
+    first_name: "Moletom",
+    last_name: "Kickflip",
+    photo_background: "/models/moletom-bg.webp",
+    photo_foreground: "/models/moletom-fg.webp",
+    customizer_link: "/categorias/moletons"
+  },
+  {
+    first_name: "Camiseta",
+    last_name: "Boardslide",
+    photo_background: "/models/camiseta-bg.webp",
+    photo_foreground: "/models/camiseta-fg.webp",
+    customizer_link: "/categorias/camisetas"
+  },
+  {
+    first_name: "Bermuda",
+    last_name: "Nose Grab",
+    photo_background: "/models/bermuda-bg.webp",
+    photo_foreground: "/models/bermuda-fg.webp",
+    customizer_link: "/categorias/bermudas"
+  },
+  {
+    first_name: "Calça",
+    last_name: "Freeride",
+    photo_background: "/models/calca-bg.webp",
+    photo_foreground: "/models/calca-fg.webp",
+    customizer_link: "/categorias/calcas"
+  }
+];
 
-/**
- * Component for "TeamGrid" Slices.
- */
-const TeamGrid = async ({ slice }: TeamGridProps): Promise<JSX.Element> => {
-  const client = createClient();
-  const skaters = await client.getAllByType("skater");
+const TEAM_GRID_TEXTS = {
+  heading: "Vista o Movimento"
+};
 
+const TeamGrid = (): JSX.Element => {
   return (
-    <Bounded
-      data-slice-type={slice.slice_type}
-      data-slice-variation={slice.variation}
-      className="bg-texture bg-brand-navy"
-    >
+    <Bounded className="bg-texture bg-brand-navy">
       <SlideIn>
         <Heading as="h2" size="lg" className="mb-8 text-center text-white">
-          <PrismicText field={slice.primary.heading} />
+          {TEAM_GRID_TEXTS.heading}
         </Heading>
       </SlideIn>
       <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
-        {skaters.map((skater, index) => (
+        {SKATERS_DATA.map((skater, index) => (
           <React.Fragment key={index}>
-            {skater.data.first_name && (
+            {skater.first_name && (
               <SlideIn>
                 <Skater index={index} skater={skater} />
               </SlideIn>
