@@ -1,3 +1,4 @@
+import type { JSX } from "react";
 import { Bounded } from "@/components/Bounded";
 import { Heading } from "@/components/Heading";
 import { ButtonLink } from "@/components/ButtonLink";
