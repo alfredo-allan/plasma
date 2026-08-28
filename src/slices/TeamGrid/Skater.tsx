@@ -39,15 +39,15 @@ export function Skater({ skater }: Props) {
 
   return (
     <div className="skater group relative flex flex-col items-center gap-4">
-      <div className="stack-layout overflow-hidden">
+      <div className="stack-layout aspect-[1128/1400] overflow-hidden">
         {/* Background Image */}
-        <div className="relative overflow-hidden">
+        <div className="relative h-full w-full overflow-hidden">
           <Image
             src={backgroundImage}
             width={1128}
             height={1400}
             alt=""
-            className="scale-100 transform transition-all duration-700 ease-out group-hover:scale-110 group-hover:brightness-75 group-hover:saturate-[.8]"
+            className="h-full w-full scale-100 transform object-cover transition-all duration-700 ease-out group-hover:scale-110 group-hover:brightness-75 group-hover:saturate-[.8]"
           />
         </div>
 
@@ -60,7 +60,7 @@ export function Skater({ skater }: Props) {
           width={1128}
           height={1400}
           alt={skater.first_name}
-          className="scale-100 transform transition-transform duration-700 ease-out group-hover:scale-[1.18]"
+          className="h-full w-full scale-100 transform object-cover transition-transform duration-700 ease-out group-hover:scale-[1.18]"
         />
 
         {/* Gradient Overlay */}
