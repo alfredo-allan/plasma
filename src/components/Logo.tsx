@@ -2,7 +2,14 @@ import { SVGProps } from 'react'
 
 export function Logo(props: SVGProps<SVGSVGElement>) {
   return (
-    <svg width="250" height="80" viewBox="0 0 400 107" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
+    <svg
+      width="250"
+      height="80"
+      viewBox="0 0 400 107"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
       <title>Plasma Skate Logo</title>
 
       <g clipPath="url(#clip0_85_3)">

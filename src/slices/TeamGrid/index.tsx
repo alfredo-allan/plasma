@@ -4,40 +4,40 @@ import React, { type JSX } from "react";
 import { Skater } from "./Skater";
 import { SlideIn } from "@/components/SlideIn";
 
-// Dados fixos dos skaters - você pode editar aqui
+// Cenas lifestyle com modelos usando as peças Plasma em movimento
 const SKATERS_DATA = [
   {
-    first_name: "Tony",
-    last_name: "Hawk",
-    photo_background: "/skaters/tony-bg.jpg",
-    photo_foreground: "/skaters/tony-fg.png",
-    customizer_link: "/customize/tony-hawk"
+    first_name: "Moletom",
+    last_name: "Kickflip",
+    photo_background: "/models/moletom-bg.webp",
+    photo_foreground: "/models/moletom-fg.webp",
+    customizer_link: "/categorias/moletons"
   },
   {
-    first_name: "Nyjah",
-    last_name: "Huston",
-    photo_background: "/skaters/nyjah-bg.jpg",
-    photo_foreground: "/skaters/nyjah-fg.png",
-    customizer_link: "/customize/nyjah-huston"
+    first_name: "Camiseta",
+    last_name: "Boardslide",
+    photo_background: "/models/camiseta-bg.webp",
+    photo_foreground: "/models/camiseta-fg.webp",
+    customizer_link: "/categorias/camisetas"
   },
   {
-    first_name: "Leticia",
-    last_name: "Bufoni",
-    photo_background: "/skaters/leticia-bg.jpg",
-    photo_foreground: "/skaters/leticia-fg.png",
-    customizer_link: "/customize/leticia-bufoni"
+    first_name: "Bermuda",
+    last_name: "Nose Grab",
+    photo_background: "/models/bermuda-bg.webp",
+    photo_foreground: "/models/bermuda-fg.webp",
+    customizer_link: "/categorias/bermudas"
   },
   {
-    first_name: "Shane",
-    last_name: "O'Neill",
-    photo_background: "/skaters/shane-bg.jpg",
-    photo_foreground: "/skaters/shane-fg.png",
-    customizer_link: "/customize/shane-oneill"
+    first_name: "Calça",
+    last_name: "Freeride",
+    photo_background: "/models/calca-bg.webp",
+    photo_foreground: "/models/calca-fg.webp",
+    customizer_link: "/categorias/calcas"
   }
 ];
 
 const TEAM_GRID_TEXTS = {
-  heading: "Nossa Equipe"
+  heading: "Vista o Movimento"
 };
 
 const TeamGrid = (): JSX.Element => {
