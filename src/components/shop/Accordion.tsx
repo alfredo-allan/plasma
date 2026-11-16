@@ -9,6 +9,8 @@ type AccordionItemProps = {
   children: ReactNode;
   defaultOpen?: boolean;
   className?: string;
+  /** Número exibido ao lado do título (ex.: filtros marcados nesse grupo) */
+  badge?: number;
 };
 
 /**
@@ -21,6 +23,7 @@ export function AccordionItem({
   children,
   defaultOpen = false,
   className,
+  badge,
 }: AccordionItemProps) {
   const [open, setOpen] = useState(defaultOpen);
   const panelId = useId();
@@ -34,7 +37,14 @@ export function AccordionItem({
         aria-controls={panelId}
         className="flex w-full items-center justify-between gap-4 py-4 text-left font-sans text-sm uppercase tracking-wide transition-colors hover:text-brand-plasma"
       >
-        {title}
+        <span className="flex items-center gap-2">
+          {title}
+          {!!badge && (
+            <span className="grid h-5 min-w-5 place-items-center rounded-full bg-brand-plasma px-1.5 font-mono text-[11px] leading-none text-white">
+              {badge}
+            </span>
+          )}
+        </span>
         <ChevronDown
           className={clsx(
             "size-4 shrink-0 transition-transform duration-300",
@@ -43,15 +53,24 @@ export function AccordionItem({
         />
       </button>
 
-      {/* Truque com grid-template-rows pra animar altura "automática" sem medir em JS */}
+      {/*
+        Truque com grid-template-rows pra animar altura "automática" sem medir em JS.
+        IMPORTANTE: o filho direto (min-h-0) não pode ter padding - padding não
+        encolhe, então com a linha em 0fr sobravam os 16px do `pb-4` mostrando a
+        primeira opção cortada em cima da linha. O espaçamento fica no wrapper
+        de dentro. `inert` quando fechado: as opções escondidas não recebem foco.
+      */}
       <div
         id={panelId}
+        inert={!open}
         className={clsx(
-          "grid overflow-hidden transition-[grid-template-rows] duration-300 ease-in-out",
-          open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+          "grid transition-[grid-template-rows,opacity] duration-300 ease-in-out",
+          open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
         )}
       >
-        <div className="min-h-0 overflow-hidden pb-4">{children}</div>
+        <div className="min-h-0 overflow-hidden">
+          <div className="pb-5 pt-1">{children}</div>
+        </div>
       </div>
     </div>
   );

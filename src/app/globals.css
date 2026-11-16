@@ -95,3 +95,113 @@
     transform: translateX(0);
   }
 }
+
+/* ------------------------------------------------------------------ */
+/* Portal de entrada "Drop In" (components/entry)                      */
+/* ------------------------------------------------------------------ */
+
+/* Script inline do layout marca o <html> antes da hidratação: */
+html[data-entry-skip] .entry-gate {
+  display: none;
+}
+html[data-entry-active] {
+  overflow: hidden;
+}
+
+/* Luz de poste atravessando o concreto devagar */
+.entry-lamp {
+  overflow: hidden;
+  animation: entry-flicker 6s steps(1) infinite;
+}
+.entry-lamp::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 140vmax;
+  height: 140vmax;
+  margin: -70vmax 0 0 -70vmax;
+  background: radial-gradient(
+    circle at center,
+    rgba(255, 236, 200, 0.45) 0%,
+    rgba(255, 210, 160, 0.15) 28%,
+    transparent 55%
+  );
+  mix-blend-mode: soft-light;
+  will-change: transform;
+  animation: entry-lamp 11s ease-in-out infinite alternate;
+}
+
+@keyframes entry-lamp {
+  from {
+    transform: translate(-55vw, -28vh);
+  }
+  to {
+    transform: translate(55vw, -8vh);
+  }
+}
+
+/* "falha" de lâmpada velha, bem de vez em quando */
+@keyframes entry-flicker {
+  0%, 61%, 63.5%, 100% {
+    opacity: 1;
+  }
+  62%, 63% {
+    opacity: 0.55;
+  }
+}
+
+/* Mesma linguagem do logo: branco com contorno preto + sombra dura */
+.entry-tagline {
+  color: #fffdf9;
+  -webkit-text-stroke: 2px #000;
+  paint-order: stroke fill;
+  text-shadow: 4px 4px 0 #000;
+}
+
+.entry-spin {
+  animation: entry-spin 2.4s linear infinite;
+}
+
+@keyframes entry-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .entry-lamp,
+  .entry-lamp::before,
+  .entry-spin {
+    animation: none;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Foto ampliada do produto (components/shop/ImageLightbox)            */
+/* ------------------------------------------------------------------ */
+.lightbox-in {
+  animation: lightbox-fade 0.25s ease-out;
+}
+.lightbox-img-in {
+  animation: lightbox-pop 0.3s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+}
+
+@keyframes lightbox-fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes lightbox-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lightbox-in,
+  .lightbox-img-in {
+    animation: none;
+  }
+}

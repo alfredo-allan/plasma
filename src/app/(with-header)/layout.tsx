@@ -1,3 +1,4 @@
+import { FloatingNav } from "@/components/FloatingNav";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 
@@ -11,6 +12,8 @@ export default function Layout({ children }: Props) {
       <Header />
       {children}
       <Footer />
+      {/* Fixa no rodapé; aparece com a rolagem (ver doc do componente) */}
+      <FloatingNav />
     </>
   );
 }

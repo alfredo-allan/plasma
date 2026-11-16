@@ -1,9 +1,10 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Expand } from "lucide-react";
 import clsx from "clsx";
 import { CategorySlug } from "@/lib/shop/types";
+import { ImageLightbox } from "./ImageLightbox";
 import { ProductImage } from "./ProductImage";
 
 type Props = {
@@ -16,9 +17,13 @@ type Props = {
  * Galeria da PDP: no mobile é um carrossel com swipe (scroll-snap nativo) e
  * bolinhas indicadoras; no desktop é imagem grande + trilha de thumbnails
  * na lateral. Os dois compartilham o mesmo estado de índice selecionado.
+ *
+ * Clicar/tocar na foto abre a <ImageLightbox/> (foto ampliada com zoom),
+ * que também usa esse mesmo índice - fechou, a galeria está na mesma foto.
  */
 export function ImageGallery({ images, alt, category }: Props) {
   const [index, setIndex] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
   const trackRef = useRef<HTMLDivElement>(null);
 
   function goTo(nextIndex: number) {
@@ -31,23 +36,36 @@ export function ImageGallery({ images, alt, category }: Props) {
     setIndex(Math.round(el.scrollLeft / el.clientWidth));
   }
 
-  function scrollToSlide(i: number) {
+  function scrollToSlide(i: number, behavior: ScrollBehavior = "smooth") {
     const el = trackRef.current;
     if (!el) return;
-    el.scrollTo({ left: i * el.clientWidth, behavior: "smooth" });
+    el.scrollTo({ left: i * el.clientWidth, behavior });
+  }
+
+  // navegou dentro da foto ampliada -> carrossel do mobile acompanha
+  function onLightboxIndexChange(i: number) {
+    setIndex(i);
+    scrollToSlide(i, "instant");
   }
 
   return (
     <div className="flex flex-col gap-4 lg:flex-row-reverse lg:gap-6">
       <div className="lg:flex-1">
         {/* Carrossel com swipe - só mobile/tablet */}
+        <div className="relative lg:hidden">
         <div
           ref={trackRef}
           onScroll={onTrackScroll}
           className="flex snap-x snap-mandatory overflow-x-auto scroll-smooth rounded-2xl bg-white ring-1 ring-stone-200 lg:hidden [&::-webkit-scrollbar]:hidden"
         >
           {images.map((src, i) => (
-            <div key={src + i} className="relative aspect-square w-full shrink-0 snap-center">
+            <button
+              key={src + i}
+              type="button"
+              onClick={() => setLightboxOpen(true)}
+              aria-label={`Ampliar foto ${i + 1}`}
+              className="relative aspect-square w-full shrink-0 snap-center"
+            >
               <ProductImage
                 category={category}
                 src={src}
@@ -56,8 +74,16 @@ export function ImageGallery({ images, alt, category }: Props) {
                 sizes="100vw"
                 className="object-contain p-6"
               />
-            </div>
+            </button>
           ))}
+        </div>
+          {/* dica de "toque pra ampliar" */}
+          <span
+            aria-hidden
+            className="pointer-events-none absolute bottom-3 right-3 grid size-9 place-items-center rounded-full bg-black/70 text-white"
+          >
+            <Expand className="size-4" />
+          </span>
         </div>
 
         {images.length > 1 && (
@@ -78,15 +104,30 @@ export function ImageGallery({ images, alt, category }: Props) {
         )}
 
         {/* Imagem grande - só desktop */}
-        <div className="relative hidden aspect-square overflow-hidden rounded-2xl bg-white ring-1 ring-stone-200 lg:block">
-          <ProductImage
-            category={category}
-            src={images[index]}
-            alt={alt}
-            fill
-            sizes="(min-width:1024px) 55vw, 100vw"
-            className="object-contain p-10"
-          />
+        <div className="group relative hidden aspect-square overflow-hidden rounded-2xl bg-white ring-1 ring-stone-200 lg:block">
+          <button
+            type="button"
+            onClick={() => setLightboxOpen(true)}
+            aria-label="Ampliar foto"
+            className="absolute inset-0 cursor-zoom-in"
+          >
+            <ProductImage
+              category={category}
+              src={images[index]}
+              alt={alt}
+              fill
+              sizes="(min-width:1024px) 55vw, 100vw"
+              className="object-contain p-10 transition-transform duration-500 group-hover:scale-[1.03]"
+            />
+          </button>
+
+          {/* dica de "ampliar" */}
+          <span
+            aria-hidden
+            className="pointer-events-none absolute bottom-3 right-3 flex items-center gap-1.5 rounded-full bg-black/70 px-3 py-1.5 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100"
+          >
+            <Expand className="size-3.5" /> Ampliar
+          </span>
 
           {images.length > 1 && (
             <>
@@ -130,6 +171,16 @@ export function ImageGallery({ images, alt, category }: Props) {
           ))}
         </div>
       )}
+
+      <ImageLightbox
+        open={lightboxOpen}
+        images={images}
+        index={index}
+        alt={alt}
+        category={category}
+        onIndexChange={onLightboxIndexChange}
+        onClose={() => setLightboxOpen(false)}
+      />
     </div>
   );
 }

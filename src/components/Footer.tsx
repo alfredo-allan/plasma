@@ -53,7 +53,8 @@ export function Footer() {
       </div>
 
       {/* Navegação */}
-      <Bounded as="nav">
+      {/* pb extra: espaço pra navbar flutuante não cobrir os links */}
+      <Bounded as="nav" className="!pb-32 sm:!pb-36">
         <ul className="flex flex-wrap justify-center gap-8 ~text-lg/xl">
           {NAVIGATION_ITEMS.map((item) => (
             <li key={item.text} className="hover:underline">
