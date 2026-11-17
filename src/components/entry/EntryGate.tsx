@@ -110,22 +110,36 @@ function EntryOverlay({ phase, setPhase, contentHidden, setContentHidden, flip, 
 
     onFlip(); // kickflip no símbolo antes do shape passar
 
-    // Shape gigante na diagonal: entra pela esquerda/baixo, cobre a tela,
-    // e sai pela direita/cima. Medidas em px a partir do maior lado da tela
-    // (o shape é dimensionado em vmax no CSS, ver <DeckWipe/>).
+    // Shape gigante na diagonal: entra, PARA cobrindo a tela com a marca
+    // (tempo pra ler com calma), e só então segue viagem revelando o site.
+    // Medidas em px a partir do maior lado da tela (o shape é dimensionado
+    // em vmax no CSS, ver <DeckWipe/>).
     const d = Math.max(window.innerWidth, window.innerHeight);
     const angle = (-18 * Math.PI) / 180;
     const along = (t: number) => ({ x: Math.cos(angle) * t * d, y: Math.sin(angle) * t * d });
+    const wipe = wipeRef.current;
+    const brand = wipe.querySelector("[data-wipe-brand]");
+    const tagline = wipe.querySelector("[data-wipe-tagline]");
 
     const tl = gsap.timeline({ onComplete: () => setPhase("done") });
-    tl.set(wipeRef.current, { ...along(-3), rotation: -18, autoAlpha: 1 })
-      .to(wipeRef.current, { ...along(0), duration: 0.6, ease: "power3.in" }, 0.35)
+    tl.set(wipe, { ...along(-3), rotation: -18, autoAlpha: 1 })
+      .set(brand, { autoAlpha: 0, scale: 0.85, y: 20 })
+      .set(tagline, { autoAlpha: 0, y: 16 })
+      // 1) entra e desacelera até cobrir a tela
+      .to(wipe, { ...along(0), duration: 1.1, ease: "power3.out" }, 0.35)
       .add(() => {
         // tela 100% coberta: some com o portal por baixo e libera o site
         setContentHidden(true);
         reveal();
-      })
-      .to(wipeRef.current, { ...along(3), duration: 0.7, ease: "power3.out" }, "+=0.12");
+      }, 0.35 + 0.75)
+      // 2) marca aparece inteira, depois a frase
+      .to(brand, { autoAlpha: 1, scale: 1, y: 0, duration: 0.6, ease: "back.out(1.6)" }, 0.95)
+      .to(tagline, { autoAlpha: 1, y: 0, duration: 0.5, ease: "power2.out" }, 1.3)
+      // 3) segura pra leitura (~1,6s com tudo visível)
+      .addLabel("exit", "+=1.6")
+      // 4) conteúdo sai junto e o shape continua viagem, acelerando
+      .to([brand, tagline], { autoAlpha: 0, y: -12, duration: 0.3, ease: "power1.in" }, "exit")
+      .to(wipe, { ...along(3), duration: 1.0, ease: "power3.in" }, "exit+=0.1");
   }, [phase, setPhase, setContentHidden, onFlip]);
 
   // Esc = pular
@@ -234,8 +248,18 @@ function DeckWipe({ ref }: { ref: React.Ref<HTMLDivElement> }) {
       style={{ width: "400vmax", height: "150vmax", marginLeft: "-200vmax", marginTop: "-75vmax" }}
     >
       <div className="absolute inset-0 bg-texture opacity-30 mix-blend-multiply" />
-      {/* símbolo em branco aqui - vermelho sobre vermelho sumiria */}
-      <Logo className="relative h-auto w-[70vmax] drop-shadow-[0.6vmax_0.6vmax_0_#000] [&_g>path:not(:first-child)]:fill-[#fffdf9]" />
+
+      {/* Conteúdo "desgirado" (+18°) pra ficar reto e legível, e dimensionado
+          pela LARGURA da tela (vw), não por vmax - no celular em pé vmax é a
+          altura, e o logo passava da borda. */}
+      <div className="relative flex rotate-[18deg] flex-col items-center gap-[4vmin] px-6">
+        <div data-wipe-brand>
+          <Logo className="h-auto w-[min(78vw,52rem)] drop-shadow-[0.5vmin_0.5vmin_0_#000] [&_g>path:not(:first-child)]:fill-[#fffdf9]" />
+        </div>
+        <p data-wipe-tagline className="entry-tagline text-center font-sans leading-none ~text-3xl/6xl">
+          Mais sorte que juízo.
+        </p>
+      </div>
     </div>
   );
 }
